@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Ecosystem</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        input, button { margin: 5px; }
+        .section { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Student Ecosystem</h1>
+
+    <div class="section">
+        <h3>Add Student</h3>
+        <input type="text" id="studentName" placeholder="Student Name">
+        <button onclick="addStudent()">Add</button>
+    </div>
+
+    <div class="section">
+        <h3>Add Teacher</h3>
+        <input type="text" id="teacherName" placeholder="Teacher Name">
+        <button onclick="addTeacher()">Add</button>
+    </div>
+
+    <div class="section">
+        <h3>Add Course</h3>
+        <input type="text" id="courseName" placeholder="Course Name">
+        <button onclick="addCourse()">Add</button>
+    </div>
+
+    <div class="section">
+        <h3>Assign Teacher to Course</h3>
+        <input type="text" id="assignTeacher" placeholder="Teacher Name">
+        <input type="text" id="assignCourse" placeholder="Course Name">
+        <button onclick="assignTeacher()">Assign</button>
+    </div>
+
+    <div class="section">
+        <h3>Enroll Student in Course</h3>
+        <input type="text" id="enrollStudent" placeholder="Student Name">
+        <input type="text" id="enrollCourse" placeholder="Course Name">
+        <button onclick="enrollStudent()">Enroll</button>
+    </div>
+
+    <div class="section">
+        <h3>Grade Student</h3>
+        <input type="text" id="gradeTeacher" placeholder="Teacher Name">
+        <input type="text" id="gradeStudent" placeholder="Student Name">
+        <input type="text" id="gradeCourse" placeholder="Course Name">
+        <input type="number" id="gradeValue" placeholder="Grade">
+        <button onclick="gradeStudent()">Grade</button>
+    </div>
+
+    <div class="section">
+        <h3>All Students</h3>
+        <button onclick="getStudents()">Refresh</button>
+        <pre id="studentsList"></pre>
+    </div>
+
+    <div class="section">
+        <h3>All Courses</h3>
+        <button onclick="getCourses()">Refresh</button>
+        <pre id="coursesList"></pre>
+    </div>
+
+    <script>
+        const API = "http://127.0.0.1:5000";
+
+        async function post(endpoint, data) {
+            const res = await fetch(`${API}/${endpoint}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            const json = await res.json();
+            alert(json.message || json.error);
+        }
+
+        function addStudent() {
+            const name = document.getElementById("studentName").value;
+            post("add_student", { name });
+        }
+
+        function addTeacher() {
+            const name = document.getElementById("teacherName").value;
+            post("add_teacher", { name });
+        }
+
+        function addCourse() {
+            const name = document.getElementById("courseName").value;
+            post("add_course", { name });
+        }
+
+        function assignTeacher() {
+            const teacher = document.getElementById("assignTeacher").value;
+            const course = document.getElementById("assignCourse").value;
+            post("assign_teacher", { teacher, course });
+        }
+
+        function enrollStudent() {
+            const student = document.getElementById("enrollStudent").value;
+            const course = document.getElementById("enrollCourse").value;
+            post("enroll", { student, course });
+        }
+
+        function gradeStudent() {
+            const teacher = document.getElementById("gradeTeacher").value;
+            const student = document.getElementById("gradeStudent").value;
+            const course = document.getElementById("gradeCourse").value;
+            const grade = parseInt(document.getElementById("gradeValue").value);
+            post("grade", { teacher, student, course, grade });
+        }
+
+        async function getStudents() {
+            const res = await fetch(`${API}/students`);
+            const data = await res.json();
+            document.getElementById("studentsList").textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function getCourses() {
+            const res = await fetch(`${API}/courses`);
+            const data = await res.json();
+            document.getElementById("coursesList").textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
